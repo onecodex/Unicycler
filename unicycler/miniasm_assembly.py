@@ -398,14 +398,8 @@ def polish_unitigs_with_racon(unitig_graph, miniasm_dir, read_dict, graph, racon
 
             if return_code == 0 and os.path.isfile(polished_fasta):
                 break
-            if os.path.isfile(polished_fasta):
-                os.remove(polished_fasta)
-            if os.path.isfile(racon_log):
-                os.remove(racon_log)
-
-        # If even after all those tries Racon still didn't succeed, then we give up!
-        if return_code != 0 or not os.path.isfile(polished_fasta):
-            break
+            else:
+                sys.exit(err)
 
         unitig_graph.replace_with_polished_sequences(polished_fasta, scoring_scheme,
                                                      old_racon_version)
