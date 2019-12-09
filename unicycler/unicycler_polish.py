@@ -609,6 +609,12 @@ def long_read_polish_small_changes_racon(fasta, round_num, args, all_ale_scores,
         out = racon.stderr.read() + out + err
         print(dim(out.decode()))
 
+    if minimap.returncode != 0:
+        sys.exit(minimap.stderr.read())
+
+    if racon.returncode != 0:
+        sys.exit(racon.stderr.read())
+
     # Use MUMmer to align pre-Racon assembly to post-Racon assembly and get the SNPs.
     nucmer_command = [args.nucmer, '-p', 'nucmer', fasta, racon_fasta]
     run_command(nucmer_command, args)
