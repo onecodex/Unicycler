@@ -370,6 +370,9 @@ def polish_unitigs_with_racon(unitig_graph, miniasm_dir, read_dict, graph, racon
 
         # Run Racon. It crashes sometimes, so repeat until its return code is 0.
         return_code = 1
+
+        racon_ran_once_successfully = False
+
         for t in range(100):  # Only try a fixed number of times, to prevent an infinite loop.
 
             # The old version of Racon takes the output file (polished fasta) as an argument.
@@ -397,9 +400,13 @@ def polish_unitigs_with_racon(unitig_graph, miniasm_dir, read_dict, graph, racon
                     out_file.write(out)
 
             if return_code == 0 and os.path.isfile(polished_fasta):
+                racon_ran_once_successfully = True
                 break
             else:
-                sys.exit(err)
+                log.log(red("Racon crashed. Trying {} more times. Last error message:").format(100-t))
+
+        if not racon_ran_once_successfully:
+            sys.exit("Racon failed to run successfully at least once")
 
         unitig_graph.replace_with_polished_sequences(polished_fasta, scoring_scheme,
                                                      old_racon_version)
